@@ -10,6 +10,7 @@ using Spice.Data;
 using Spice.Models;
 using Spice.Models.ViewModels;
 using Spice.Utility;
+using Stripe;
 
 namespace Spice.Areas.Customer.Controllers
 {
@@ -115,7 +116,7 @@ namespace Spice.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
-        public async Task<IActionResult> SummaryPost()
+        public async Task<IActionResult> SummaryPost(string stripeToken)
         {
             var claimsIdentity = (ClaimsIdentity)this.User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -155,15 +156,13 @@ namespace Spice.Areas.Customer.Controllers
                 _db.OrderDetails.Add(orderDetails);
             }
 
-            detailsCart.OrderHeader.OrderTotalOriginal = detailsCart.OrderHeader.OrderTotal;
-          
             if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
             {
                 detailsCart.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
                 var couponFromDB = await _db.Coupon
                     .Where(c => c.Name.ToLower() == detailsCart.OrderHeader.CouponCode.ToLower()).FirstOrDefaultAsync();
                 detailsCart.OrderHeader.OrderTotal =
-                    SD.DiscountedPrice(couponFromDB, detailsCart.OrderHeader.OrderTotal);
+                    SD.DiscountedPrice(couponFromDB, detailsCart.OrderHeader.OrderTotalOriginal);
             }
             else
             {
@@ -175,8 +174,41 @@ namespace Spice.Areas.Customer.Controllers
             _db.ShoppingCart.RemoveRange(detailsCart.listCart);
             HttpContext.Session.SetInt32(SD.ssShoppingCartCount, 0);
             await _db.SaveChangesAsync();
+
+            var options = new ChargeCreateOptions
+            {
+                Amount = Convert.ToInt32(detailsCart.OrderHeader.OrderTotal * 100),
+                Currency = "usd",
+                Description = "Order ID : " + detailsCart.OrderHeader.Id,
+                Source = stripeToken
+
+            };
+
+            var service = new ChargeService();
+            Charge charge = service.Create(options);
+
+            if (charge.BalanceTransactionId == null)
+            {
+                detailsCart.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
+            }
+            else
+            {
+                detailsCart.OrderHeader.TransactionId = charge.BalanceTransactionId;
+            }
+
+            if (charge.Status.ToLower() == "succeeded")
+            {
+                detailsCart.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
+                detailsCart.OrderHeader.Status = SD.StatusSubmitted;
+            }
+            else
+            {
+                detailsCart.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
+            }
+
+            await _db.SaveChangesAsync();
             return RedirectToAction("Index", "Home");
-            //return RedirectToAction("Confirm", "Order", new {id = detailsCart.OrderHeader.Id});
+           
         }
 
         public IActionResult AddCoupon()
