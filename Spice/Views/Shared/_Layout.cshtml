@@ -1,0 +1,95 @@
+﻿@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+@using Spice.Utility
+@using Microsoft.AspNetCore.Http
+
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Spice</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="~/css/jquery-ui.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.16/jquery.timepicker.css" integrity="sha512-GgUcFJ5lgRdt/8m5A0d0qEnsoi8cDoF0d6q+RirBPtL423Qsj5cI9OxQ5hWvPi5jjvTLM/YhaaFuIeWCLi6lyQ==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head> 
+<body class="body-background">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="Customer" asp-controller="Home" asp-action="Index">Shop</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        @{
+                            if (User.IsInRole(SD.ManagerUser))
+                            {
+                                <li class="nav-item dropdown text-white-50">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Content Management
+                                    </a>
+                                    <div class="dropdown-menu mt-2" aria-labelledby="navbarDropdownMenuLink">
+                                        <a class="dropdown-item" asp-controller="Category" asp-action="Index" asp-area="Admin">Category</a>
+                                        <a class="dropdown-item" asp-controller="SubCategory" asp-action="Index" asp-area="Admin">Sub Category</a>
+                                        <a class="dropdown-item" asp-controller="MenuItem" asp-action="Index" asp-area="Admin">MenuItems</a>
+                                        <a class="dropdown-item" asp-controller="Coupon" asp-action="Index" asp-area="Admin">Coupons</a>
+                                        <a class="dropdown-item" asp-controller="User" asp-action="Index" asp-area="Admin">Users</a>
+                                    </div>
+                                </li>
+                            }
+                        }
+
+                        @{
+                            if (HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount) != null)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                        @{
+                                            var count = HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount);
+                                        }
+                                        <i class="fas fa shopping-cart"></i>Cart&nbsp;(@count)
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-area="" asp-controller="" asp-action="">
+                                        <i class="fas fa shopping-cart"></i>Cart&nbsp;(0)
+                                    </a>
+                                </li>
+
+                            }
+                        }
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer bg-dark">
+        <div class="container text-white">
+            &copy; 2020 - Spice
+        </div>
+    </footer>
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/jquery-ui.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

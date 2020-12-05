@@ -1,0 +1,53 @@
+﻿
+@model IEnumerable<SubCategory>
+@{
+    ViewData["Title"] = "Category";
+
+}
+<br/> <br/>
+
+<div class="border backgroundWhite">
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-info">Sub Category List</h2>
+        </div>
+        <div class="col-md-6 text-right">
+            <partial name="_CreateButtonPartial" />
+        </div>
+    </div>
+    <br/>
+    <div>
+        @if (Model.Count() > 0)
+        {
+            <table class="table table-striped table-bordered">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>@Html.DisplayNameFor(m => m.Name)</th>
+                        <th>@Html.DisplayNameFor(m => m.Category.Name)</th>
+                        <th>Actions</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(m => item.Name)</td>
+                        <td>@Html.DisplayFor(m => item.Category.Name)</td>
+
+                        <partial name="_TableButtonIconPartial" model="item.Id" />
+
+                    </tr>
+                }
+
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No Sub Category Exist..</p>
+        }
+       
+    </div>
+</div>
+

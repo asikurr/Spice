@@ -1,0 +1,43 @@
+﻿@using System.Drawing
+@model IEnumerable<MenuItem>
+
+
+@if (Model.Count() > 0)
+{
+<div class="col-12 post @Model.FirstOrDefault().Category.Name.Replace(" ", string.Empty) menu-resturant">
+    <div class="row">
+        <h3 class="text-success">@Model.FirstOrDefault().Category.Name</h3>
+    </div>
+
+
+    @foreach (var item in Model)
+    {
+        <div class="border border-info rounded col-12" style="margin: 10px 0px; padding: 10px">
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <img src="@item.Image" style="width: 99%; border-radius: 5px; border:1px solid #bbb9b9" />
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="" style="font-size: 22px; color:maroon">@item.Name</label><br/>
+                            <small class="" style="color:maroon">@item.Category.Name</small>
+                        </div>
+                        <div class="col-md-4 text-right" style="color: maroon; font-size: 24px">
+                            <h4>$ @item.Price</h4>
+                        </div>
+                        <div class="col-12 text-justify d-none d-md-block">
+                            <p>@Html.Raw(@item.Description)</p>
+                        </div>
+                        <div class="col-md-3 col-sm-12 offset-md-9 text-center">
+                            <a asp-action="Details" class="btn btn-success form-control" asp-route-id="@item.Id">Details</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+}

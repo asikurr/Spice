@@ -1,0 +1,147 @@
+﻿@model Spice.Models.ViewModels.MenuItemViewModel
+@using Spice.Extensions
+@{
+    ViewData["Title"] = "Details";
+
+}
+<br />
+<h2 class="text-info">Details Menu Items.</h2>
+<br />
+
+<form >
+    <div class="border backgroundWhite row">
+        <input type="hidden" asp-for="MenuItem.Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="col-8">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Name" class="col-form-label"></label>
+                </div>
+
+                <div class="col-8">
+                    <input disabled asp-for="MenuItem.Name" class="form-control" />
+                    <span asp-validation-for="MenuItem.Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Description" class="col-form-label"></label>
+                </div>
+
+                <div class="col-8">
+                    @Html.TextAreaFor(m => m.MenuItem.Description)
+                    <span asp-validation-for="MenuItem.Description" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Price" class="col-form-label"></label>
+                </div>
+
+                <div class="col-8">
+                    <input disabled asp-for="MenuItem.Price" class="form-control" />
+                    <span asp-validation-for="MenuItem.Price" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Image" class="col-form-label"></label>
+                </div>
+
+                <div class="col-8">
+                    <input disabled type="file" name="files" multiple="" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
+                </div>
+
+                <div class="col-8">
+                    <select disabled asp-for="@Model.MenuItem.CategoryId"
+                            id="CategoryId"
+                            asp-items="Model.Category.ToSelectListItem(Model.MenuItem.CategoryId)"
+                            class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
+                </div>
+
+                <div class="col-8">
+                    <select disabled asp-for="@Model.MenuItem.SubCategoryId"
+                            id="SubCategoryId"
+                            name="SubCategoryId"
+                            asp-items="@(new SelectList(string.Empty, "Id", "Name"))"
+                            class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItem.Spicyness" class="col-form-label"></label>
+                </div>
+
+                <div class="col-8">
+                    <select disabled asp-for="MenuItem.Spicyness"
+                            asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()"
+                            class="form-control"></select>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-3 offset-1">
+            <img src="@Model.MenuItem.Image" style="width:100%;border-radius: 5px; border:1px solid #bbb9b9" />
+        </div>
+
+
+
+        <div class="col-8">
+            <div class="col-8 offset-4">
+                <partial name="_DetailsAndBackToList" model="Model.MenuItem.Id" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        tinymce.init({
+            selector: 'textarea'
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            getSubCategory();
+            $('#CategoryId').change(function() {
+                getSubCategory();
+            });
+        });
+
+        function getSubCategory() {
+            var url = '@Url.Content("~/")' + "Admin/SubCategory/GetSubCategory";
+            var ddlSource = '#CategoryId';
+            $.getJSON(url,
+                { id: $(ddlSource).val() },
+                function(data) {
+                    var items = '';
+                    $('#SubCategoryId').empty();
+                    $.each(data,
+                        function(i, subCategory) {
+                            items += "<option value='" + subCategory.value + "'>" + subCategory.text + "</option>";
+
+                        });
+                    $('#SubCategoryId').html(items);
+                });
+        }
+    </script>
+}
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
