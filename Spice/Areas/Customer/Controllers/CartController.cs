@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Spice.Data;
@@ -207,8 +208,9 @@ namespace Spice.Areas.Customer.Controllers
             }
 
             await _db.SaveChangesAsync();
-            return RedirectToAction("Index", "Home");
-           
+            //return RedirectToAction("Index", "Home");
+            return RedirectToAction("Confirm", "Order", new {detailsCart.OrderHeader.Id});
+
         }
 
         public IActionResult AddCoupon()
@@ -273,5 +275,6 @@ namespace Spice.Areas.Customer.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        
     }
 }

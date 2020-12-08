@@ -110,3 +110,6 @@ body {
         background-color: #545b62;
         color: #fff;
     }
+.modal-width {
+    max-width: 900px !important;
+}
