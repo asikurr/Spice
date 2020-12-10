@@ -47,8 +47,27 @@
                         }
 
                         @{
+                            if (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.FrontDeskUser))
+                            {
+                                <li class="nav-item dropdown text-white-50">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Order Management
+                                    </a>
+                                    <div class="dropdown-menu mt-2" aria-labelledby="navbarDropdownMenuLink">
+                                        @if (User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.ManagerUser))
+                                        {
+                                            <a class="dropdown-item" asp-controller="Order" asp-action="ManageOrder" asp-area="Customer">Manage Order</a>
+                                        }
+                                        @if (User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser))
+                                        {
+                                         <a class="dropdown-item" asp-controller="Order" asp-action="OrderPickup" asp-area="Customer">Order PickUp</a>
+                                        }
+                                     
+                                    </div>
+                                </li>
+                            }
 
-                            if (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.CustomerEndUser))
+                            if (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.CustomerEndUser) || User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.FrontDeskUser))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-white" asp-area="Customer" asp-controller="Order" asp-action="OrderHistory">
