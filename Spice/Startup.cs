@@ -48,7 +48,11 @@ namespace Spice
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
             });
-
+            services.AddAuthentication().AddFacebook(facebookOption =>
+            {
+                facebookOption.AppId = "581243149004490";
+                facebookOption.AppSecret = "a72e3bebaa552f73d3d52af4de3883d7";
+            });
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
             services.AddControllersWithViews();
